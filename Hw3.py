@@ -19,7 +19,6 @@ update_button = pn.widgets.Button(name="Update Data", button_type="primary")
 stock_price_plot = pn.pane.HoloViews()
 moving_avg_plot = pn.pane.HoloViews()
 momentum_plot = pn.pane.HoloViews()
-fundamental_table = pn.widgets.DataFrame()
 
 class StockDataFetcher:
     def __init__(self, ticker):
@@ -81,8 +80,6 @@ def update_dashboard(event):
     moving_avg_plot.object = DashboardPlots.plot_moving_averages(stock_data)
     momentum_plot.object = DashboardPlots.plot_momentum(stock_data)
 
-    # renew foundemental data
-    fundamental_table.object = stock_fetcher.get_fundamental_data()
 
 # update the event
 update_button.on_click(update_dashboard)
@@ -91,7 +88,7 @@ update_button.on_click(update_dashboard)
 dashboard = pn.Column(
     pn.Row(ticker_input, date_picker, update_button),
     pn.Row(stock_price_plot, moving_avg_plot),
-    pn.Row(momentum_plot, fundamental_table)
+    pn.Row(momentum_plot)
 )
 
 # initiate Dashboard
