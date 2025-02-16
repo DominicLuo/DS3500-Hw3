@@ -6,20 +6,6 @@ import hvplot.pandas
 
 pn.extension()
 
-# setting the time range   
-start_date = datetime.date(2023, 1, 1)
-end_date = datetime.date(2024, 1, 1)
-
-# for interactive
-ticker_input = pn.widgets.TextInput(name="Stock Ticker", value="AAPL", placeholder="Enter stock symbol")
-date_picker = pn.widgets.DateRangeSlider(name="Date Range", start=start_date, end=end_date, value=(start_date, end_date))
-update_button = pn.widgets.Button(name="Update Data", button_type="primary")
-
-# input range
-stock_price_plot = pn.pane.HoloViews()
-moving_avg_plot = pn.pane.HoloViews()
-momentum_plot = pn.pane.HoloViews()
-
 class StockDataFetcher:
     def __init__(self, ticker):
         self.ticker = ticker
@@ -52,21 +38,27 @@ class StockDataFetcher:
 class DashboardPlots:
     @staticmethod
     def plot_stock_price(df):
-        """ price trend """
+        """ price trend 
+        :param df: DataFrame
+        """
         return df.hvplot.line(y="Close", title="Stock Price")
 
     @staticmethod
     def plot_moving_averages(df):
-        """ moving average """
+        """ moving average 
+        :param df: DataFrame
+        """
         return df.hvplot.line(y=["Close", "MA50", "MA200"], title="Moving Averages")
 
     @staticmethod
     def plot_momentum(df):
-        """ momentum factor trend """
+        """ momentum factor trend 
+        :param df: DataFrame
+        """
         return df.hvplot.line(y="Momentum", title="Momentum Factor")
 
-# call back function -- interactive
 def update_dashboard(event):
+    #stock ticker
     ticker = ticker_input.value
     start_date, end_date = date_picker.value  # user choose the data range
     stock_fetcher = StockDataFetcher(ticker)
@@ -80,16 +72,35 @@ def update_dashboard(event):
     moving_avg_plot.object = DashboardPlots.plot_moving_averages(stock_data)
     momentum_plot.object = DashboardPlots.plot_momentum(stock_data)
 
+def main():
+    # setting the time range   
+    start_date = datetime.date(2023, 1, 1)
+    end_date = datetime.date(2024, 1, 1)
 
-# update the event
-update_button.on_click(update_dashboard)
+    # for interactive
+    global ticker_input, date_picker, update_button
+    ticker_input = pn.widgets.TextInput(name="Stock Ticker", value="AAPL", placeholder="Enter stock symbol")
+    date_picker = pn.widgets.DateRangeSlider(name="Date Range", start=start_date, end=end_date, value=(start_date, end_date))
+    update_button = pn.widgets.Button(name="Update Data", button_type="primary")
 
-# layout
-dashboard = pn.Column(
-    pn.Row(ticker_input, date_picker, update_button),
-    pn.Row(stock_price_plot, moving_avg_plot),
-    pn.Row(momentum_plot)
-)
+    # input range
+    global stock_price_plot, moving_avg_plot, momentum_plot
+    stock_price_plot = pn.pane.HoloViews()
+    moving_avg_plot = pn.pane.HoloViews()
+    momentum_plot = pn.pane.HoloViews()
 
-# initiate Dashboard
-dashboard.show()
+    # update the event
+    update_button.on_click(update_dashboard)
+
+    # layout
+    dashboard = pn.Column(
+        pn.Row(ticker_input, date_picker, update_button),
+        pn.Row(stock_price_plot, moving_avg_plot),
+        pn.Row(momentum_plot)
+    )
+
+    # initiate Dashboard
+    dashboard.show()
+
+if __name__ == "__main__":
+    main()
