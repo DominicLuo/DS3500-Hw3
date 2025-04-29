@@ -75,7 +75,7 @@ def update_dashboard(event):
 def main():
     # setting the time range   
     start_date = datetime.date(2023, 1, 1)
-    end_date = datetime.date(2024, 1, 1)
+    end_date = datetime.date.today()  # Use current date
 
     # for interactive
     global ticker_input, date_picker, update_button
